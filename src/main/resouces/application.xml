@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/tx
+           				http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                        http://www.springframework.org/schema/mvc
+                        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+                        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 开启注解自动扫描 处理service dao和controller-->
+    <context:component-scan base-package="com.better.wust"/>
+    <!-- 简化的配置方式，自动帮助你完成声明，并且还自动搜索@Component , @Controller , @Service , @Repository等标注的类 -->
+    <context:annotation-config/>
+
+<!--Spring整合SpringMVC-->
+<!--SpringMVC配置-->
+    <!-- 1.配置视图解析器对象  -定义跳转的文件的前后缀 ，视图模式配置 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/view/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+
+    <!-- 2.过滤静态资源  -  <mvc:resources />更进一步，由Spring MVC框架自己处理静态资源，并添加一些有用的附加值功能 -->
+    <mvc:resources location="/" mapping="/resources/**"/>
+    <!-- 3.开去SpringMVC注解支持-当配置了mvc:annotation-driven/后，Spring就知道了我们启用注解驱动。然后Spring通过context:component-scan/标签的配置，会自动为我们将扫描到的@Component，@Controller，@Service，@Repository等注解标记的组件注册到工厂中，来处理我们的请求。 -->
+    <mvc:annotation-driven />
+
+    <!-- <mvc:default-servlet-handler />将静态资源的处理经由Spring MVC框架交回Web应用服务器处理 -->
+    <mvc:default-servlet-handler />
+
+<!--Spring整合Mybatis-->
+<!--Mybatis配置-->
+    <!-- 引入配置文件 -->
+    <context:property-placeholder location="classpath:*.properties" />
+    <!--1.配置连接池-->
+    <!-- destroy-method="close"当数据库连接不使用的时候,就把该连接重新放到数据池中,方便下次使用调用 -->
+    <bean id="jdbcDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <!-- testOnBorrow true 指明是否在从池中取出连接前进行检验,如果检验失败,则从池中去除连接并尝试取出另一个. -->
+        <property name="testOnBorrow">
+            <value>true</value>
+        </property>
+        <!-- 该选项用来验证数据库连接的有效性 -->
+        <property name="validationQuery">
+            <value>SELECT 1 </value>
+        </property>
+    </bean>
+    <!--2.配置SqlSessionFactory工厂-->
+    <!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="jdbcDataSource" />
+        <!-- 自动扫描mapping.xml文件 -->
+        <property name="mapperLocations" value="classpath:com/better/wust/**/*.xml" />
+    </bean>
+    <!--3.配置AccountDao接口所在的包-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" >
+        <property name="basePackage" value="com.better.wust.dao" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+    </bean>
+
+
+    <!--配置Spring框架声明式事务管理-->
+    <!--1.配置事务管理器 事务管理器跟事务属性对象一样，通常用户都已经配置好了，直接从spring的bean工厂获取，另外从配置也看出DataSourceTransactionManager持有dataSource -->
+    <bean id="appTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="jdbcDataSource" />
+    </bean>
+    <!--2.配置事务通知 为true则是基于类的代理将起作用（需要cglib库），为false或者省略这个属性，则标准的JDK基于接口的代理将起作用 -->
+    <tx:annotation-driven proxy-target-class="false" transaction-manager="appTransactionManager"/>
+    <!--3.配置AOP增强，略-->
+
+
+
+
+    <!-- 文件上传 -->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1000000000" />
+    </bean>
+
+</beans>

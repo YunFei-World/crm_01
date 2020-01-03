@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.better.wust.dao.ChannelDao">
+    <select id="selectAllChannel" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.Channel">
+        select * from channel_campus
+        WHERE
+        ${sql}
+        LIKE
+        ${key}
+        ORDER BY
+        ${field} ${order} limit
+        #{start},#{limit};
+    </select>
+
+    <select id="selectChannelNumber" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="int">
+        select count(*) from channel_campus WHERE ${sql} LIKE ${key};
+    </select>
+
+    <insert id="insertChannel"
+            parameterType="com.better.wust.entity.Channel">
+		INSERT INTO
+		channel(channel_id,onOffline,channel_type,campus_id)
+		VALUES(#{channel_id},#{onOffline},#{channel_type},#{campus_id});
+	</insert>
+
+    <update id="updateChannel"
+            parameterType="com.better.wust.entity.Channel">
+		UPDATE channel SET
+		onOffline=#{onOffline},
+		channel_type=#{channel_type},
+		campus_id = #{campus_id}
+		WHERE
+		channel_id=#{channel_id};
+	</update>
+
+    <select id="getLastId" resultType="String">
+		select channel_id from
+		channel order by
+		channel_id DESC limit 1;
+	</select>
+
+    <update id="deleteChannel" parameterType="String">
+		UPDATE channel SET
+		state=-1
+		WHERE channel_id=#{id};
+	</update>
+
+	<select id="selectAllChannelNames" parameterType="String" resultType="com.better.wust.entity.Channel">
+		SELECT channel_id,channel_type FROM channel WHERE
+		campus_id IN (SELECT campus_id FROM campus_manage WHERE staff_id = #{staff_id})
+		AND CONCAT(IFNULL(campus_id,'')) LIKE CONCAT(CONCAT('%',#{campus_id}),'%')
+		and state='0';
+    </select>
+
+	<select id="selectAllChannelNamesByStaff" parameterType="String" resultType="com.better.wust.entity.Channel">
+		SELECT channel_id,channel_type FROM channel WHERE CONCAT(IFNULL(campus_id,'')) LIKE CONCAT(CONCAT('%',#{campus_id}),'%') and state='0';
+    </select>
+
+
+	<select id="findChannels"  resultType="com.better.wust.entity.Channel">
+		SELECT * FROM channel where state='0';
+    </select>
+
+</mapper>

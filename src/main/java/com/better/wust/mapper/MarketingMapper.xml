@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.better.wust.dao.MarketingDao">
+
+    <select id="findAllMarketingList" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.Marketing">
+        select *  from marketing_channel
+		WHERE
+		${sql}
+		LIKE
+		${key}
+		ORDER BY
+		${field} ${order} limit
+		 #{start},#{limit};
+    </select>
+
+    <select id="getAllMarketingNumber" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="int">
+        select count(*) from marketing_channel WHERE ${sql} LIKE ${key};
+    </select>
+
+
+
+    <insert id="insertMarketing"
+            parameterType="com.better.wust.entity.Marketing">
+		INSERT INTO
+		marketing(marketing_id,marketing_name,marketing_place,marketing_date,
+	  		marketing_staff,marketing_content,marketing_fee,marketing_node,remark_first,remark_second,channel_id,url_first,url_second)
+		VALUES(#{marketing_id},#{marketing_name},#{marketing_place},#{marketing_date},#{marketing_staff},#{marketing_content},#{marketing_fee},#{marketing_node},#{remark_first},#{remark_second},#{channel_id},#{url_first},#{url_second});
+	</insert>
+
+    <update id="updateMarketing"
+            parameterType="com.better.wust.entity.Marketing">
+		UPDATE marketing SET
+		marketing_name=#{marketing_name},marketing_place=#{marketing_place},
+		marketing_date=#{marketing_date},marketing_staff=#{marketing_staff},
+		marketing_content=#{marketing_content},marketing_fee=#{marketing_fee},
+		marketing_node=#{marketing_node},
+		remark_first=#{remark_first},remark_second=#{remark_second},
+		url_first=#{url_first},url_second=#{url_second},
+		channel_id=#{channel_id}
+		WHERE
+		marketing_id=#{marketing_id};
+	</update>
+
+    <select id="getLastId" resultType="String">
+		select marketing_id from
+		marketing order by
+		marketing_id DESC limit 1;
+	</select>
+
+    <update id="delMarekting" parameterType="String">
+		UPDATE marketing SET
+		state=-1
+		WHERE marketing_id=#{id};
+	</update>
+
+    <update id="updateUrl_first" parameterType="com.better.wust.entity.Marketing">
+		update marketing set
+		url_first=#{url_first}
+		WHERE
+		marketing_id=#{marketing_id};
+	</update>
+
+    <update id="updateUrl_second" parameterType="com.better.wust.entity.Marketing">
+		update marketing set
+		url_second=#{url_second}
+		WHERE
+		marketing_id=#{marketing_id};
+	</update>
+
+    <select id="selectAllMarketingNames" resultType="com.better.wust.entity.Marketing">
+		select marketing_id,marketing_name from marketing;
+    </select>
+
+
+	<select id="findAllMarketingNameByChannel" parameterType="String" resultType="com.better.wust.entity.Marketing">
+		SELECT marketing_id,marketing_name FROM marketing WHERE channel_id = #{channel_id} and state='0';
+    </select>
+
+	<select id="findAllMarketingNameNumByChannel" parameterType="String" resultType="int" >
+		SELECT count(*) FROM marketing WHERE channel_id = #{channel_id} and state='0';
+    </select>
+
+	<select id="findAllMarketing"  resultType="com.better.wust.entity.Marketing">
+		SELECT * FROM marketing where state=0;
+    </select>
+
+
+
+
+
+
+	<select id="statisticsMarketingEffective" parameterType="String"
+			resultType="int">
+        select COUNT(*)  from orderinit_channel_staff
+        WHERE marketing_id=#{marketing_id} AND effective='a.接通-有意到店' ;
+    </select>
+
+	<select id="statisticsMarketingWait" parameterType="String"
+			resultType="int">
+        select COUNT(*)  from orderinit_channel_staff
+        WHERE marketing_id=#{marketing_id} AND effective='b.接通-待定' ;
+    </select>
+
+	<select id="statisticsMarketingUnEffective" parameterType="String"
+			resultType="int">
+        select COUNT(*)  from orderinit_channel_staff
+        WHERE marketing_id=#{marketing_id} AND effective='c.接通-拒绝' ;
+    </select>
+
+	<select id="statisticsMarketingUncontect" parameterType="String"
+			resultType="int">
+        select COUNT(*)  from orderinit_channel_staff
+        WHERE marketing_id=#{marketing_id} AND effective='d.未接通' ;
+    </select>
+
+	<select id="statisticsMarketingUncall" parameterType="String"
+			resultType="int">
+        select COUNT(*)  from orderinit_channel_staff
+        WHERE marketing_id=#{marketing_id} AND effective is null;
+    </select>
+
+	<select id="statisticsMarketingSumnum" parameterType="String"
+			resultType="int">
+        select COUNT(*)  from orderinit_channel_staff
+        WHERE marketing_id=#{marketing_id}  ;
+    </select>
+
+	<update id="updateMarketingStatistics"
+			parameterType="com.better.wust.entity.Marketing">
+		UPDATE marketing SET
+		order_num=#{order_num},
+
+		order_effective=#{order_effective},
+		order_wait=#{order_wait},
+		order_uneffective=#{order_uneffective},
+		order_uncontect=#{order_uncontect},
+		order_uncall=#{order_uncall},
+
+		proportion=#{proportion},
+		proportion_two=#{proportion_two},
+		proportion_three=#{proportion_three},
+		proportion_four=#{proportion_four},
+		proportion_five=#{proportion_five}
+		WHERE
+		marketing_id=#{marketing_id}
+	</update>
+
+
+
+<!--
+	<select id="findAllMarketingByChannelList" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.Marketing">
+        select *  from marketing_channel
+		WHERE
+		${sql}
+		LIKE
+		${key}
+		ORDER BY
+		${field} ${order} limit
+		 #{start},#{limit};
+    </select>
+
+	<select id="getAllMarketingByChannelListNumber" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="int">
+        select count(*) from marketing_channel WHERE ${sql} LIKE ${key};
+    </select>
+-->
+
+
+
+
+</mapper>

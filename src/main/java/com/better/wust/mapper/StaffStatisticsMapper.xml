@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.better.wust.dao.StaffStatisticsDao">
+
+
+<!--月-周统计-->
+
+
+    <select id="statisticsMonthIsExist" resultType="com.better.wust.entity.StaffStatisticsMonth">
+        SELECT * FROM staff_statistics_month
+        WHERE `month` = #{param1} and staff_id = #{param2};
+    </select>
+
+    <insert id="insertStaffStatisticsMonth"
+            parameterType="com.better.wust.entity.StaffStatisticsMonth">
+		INSERT INTO
+		staff_statistics_month(`month`,start_date,end_date,staff_id,campus_id,
+		sum_num,tel_num,effective,follow_up_effective,direct_shop,brought_shop,
+		invitation_shop,actual_shop,sign_up,
+		tel_effective_proportion,to_shop_proportion,to_shop_to_sign_proportion,
+		month_task,month_actual,month_proportion,
+		week_one,week_two,week_three,week_four,week_five,week_six,
+		week_one_actual,week_two_actual,week_three_actual,week_four_actual,week_five_actual,week_six_actual,
+		average_sale)
+		VALUES(#{month},#{start_date},#{end_date},#{staff_id},#{campus_id},
+		#{sum_num},#{tel_num},#{effective},#{follow_up_effective},#{direct_shop},#{brought_shop},
+		#{invitation_shop},#{actual_shop},#{sign_up},
+		#{tel_effective_proportion},#{to_shop_proportion},#{to_shop_to_sign_proportion},
+		#{month_task},#{month_actual},#{month_proportion},
+		#{week_one},#{week_two},#{week_three},#{week_four},#{week_five},#{week_six},
+		#{week_one_actual},#{week_two_actual},#{week_three_actual},#{week_four_actual},#{week_five_actual},#{week_six_actual},
+		#{average_sale});
+	</insert>
+
+    <update id="updateStatisticsByMonth"
+            parameterType="com.better.wust.entity.StaffStatisticsMonth">
+		UPDATE staff_statistics_month SET
+		sum_num=#{sum_num},
+		tel_num=#{tel_num},
+		effective=#{effective},
+		follow_up_effective=#{follow_up_effective},
+		direct_shop=#{direct_shop},
+		brought_shop=#{brought_shop},
+		invitation_shop=#{invitation_shop},
+		actual_shop=#{actual_shop},
+		sign_up=#{sign_up},
+		tel_effective_proportion=#{tel_effective_proportion},
+		to_shop_proportion=#{to_shop_proportion},
+		to_shop_to_sign_proportion=#{to_shop_to_sign_proportion},
+		month_task=#{month_task},
+		month_actual=#{month_actual},
+		month_proportion=#{month_proportion},
+		week_one=#{week_one},week_two=#{week_two},week_three=#{week_three},week_four=#{week_four},week_five=#{week_five},week_six=#{week_six},
+		week_one_actual=#{week_one_actual},week_two_actual=#{week_two_actual},week_three_actual=#{week_three_actual},week_four_actual=#{week_four_actual},week_five_actual=#{week_five_actual},week_six_actual=#{week_six_actual},
+		start_date=#{start_date},
+		end_date=#{end_date},
+		average_sale=#{average_sale}
+		WHERE
+		staff_id=#{staff_id} and `month`=#{month};
+	</update>
+
+
+    <select id="selectStaffStatisticsMonth" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.StaffStatisticsMonth">
+        select * from staff_statistics_month_list
+        WHERE
+        ${sql}
+        LIKE
+        ${key}
+        ORDER BY
+        ${field} ${order} limit
+        #{start},#{limit};
+    </select>
+
+    <select id="selectStaffStatisticsMonthNumber" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="int">
+        select count(*) from staff_statistics_month_list
+        WHERE
+        ${sql}
+        LIKE
+        ${key};
+    </select>
+
+
+    <select id="statisticsSaleMoneyByTime"
+            resultType="Double">
+        select SUM(final_price)  from sign_sale_list
+        WHERE load_time between #{param1} and #{param2}  and assign_staff_id= #{param3}  ;
+    </select>
+
+    <select id="statisticsSaleMoneyByMonth"
+            resultType="Double">
+        select SUM(final_price)  from sign_sale_list
+        WHERE load_time LIKE CONCAT(#{param1},'%')  and assign_staff_id= #{param2}  ;
+    </select>
+
+    <select id="findSaleTaskByMonth" resultType="com.better.wust.entity.SaleTask">
+        select * from sale_task where month=#{param1} and staff_id=#{param2};
+    </select>
+
+
+
+
+
+
+
+
+
+    <select id="statisticsSumNumByMonth" parameterType="String"
+            resultType="int">
+        select COUNT(*)  from order_init
+        WHERE assign_time  LIKE CONCAT(#{param1},'%') AND assign_staff_id=#{param2}  ;
+    </select>
+
+
+    <select id="statisticsTelNumByMonth" parameterType="String"
+            resultType="int">
+         select COUNT(*)  from order_init
+        WHERE assign_time  LIKE CONCAT(#{param1},'%') AND assign_staff_id=#{param2} and effective is not null ;
+    </select>
+
+    <select id="statisticsEffectiveNumByMonth" parameterType="String"
+            resultType="int">
+       select COUNT(*)  from order_init
+        WHERE assign_time  LIKE CONCAT(#{param1},'%') AND assign_staff_id=#{param2} and (effective="a.接通-有意到店" or effective="b.接通-待定");
+    </select>
+
+
+    <select id="statisticsFollowUpEffectiveNumByMonth" parameterType="String"
+            resultType="int">
+        select COUNT(DISTINCT sale_id)  from follow_up
+        WHERE time_load  LIKE CONCAT(#{param1},'%') AND   assign_staff_id=#{param2} and is_effective="有效"  ;
+    </select>
+
+    <select id="statisticsDirectShopNumByMonth" parameterType="String"
+            resultType="int">
+        select COUNT(*)  from order_init
+        WHERE assign_time  LIKE CONCAT(#{param1},'%')  AND   assign_staff_id=#{param2} and to_shop="直接上门" ;
+    </select>
+
+    <select id="statisticsBroughtShopNumByMonth" parameterType="String"
+            resultType="int">
+        select COUNT(*)  from order_init
+        WHERE assign_time  LIKE CONCAT(#{param1},'%')  AND   assign_staff_id=#{param2} and to_shop="带到访" ;
+    </select>
+
+    <select id="statisticsInvitationShopNumByMonth" parameterType="String"
+            resultType="int">
+        select COUNT(*)  from saleorder
+        WHERE time_load  LIKE CONCAT(#{param1},'%') AND  assign_staff_id=#{param2} and (arrive_time is not null  or  is_coming="上访") ;
+    </select>
+
+    <select id="statisticsActualShopNumByMonth" parameterType="String"
+            resultType="int">
+        select COUNT(*)  from saleorder
+        WHERE time_load  LIKE CONCAT(#{param1},'%') AND  assign_staff_id=#{param2} and is_coming="上访";
+    </select>
+
+    <select id="statisticsSignUpNumByMonth" parameterType="String"
+            resultType="int">
+        select COUNT(*)  from  sign_sale_list
+        WHERE load_time  LIKE CONCAT(#{param1},'%')  AND  assign_staff_id=#{param2} ;
+    </select>
+
+
+
+    <!--月-周统计 end-->
+
+
+
+
+
+
+
+    <!--my-->
+    <!--public statistics-->
+    <select id="statisticsSumNumByTime" parameterType="String"
+            resultType="int">
+        select COUNT(*)  from order_init
+        WHERE assign_time between #{param1} and #{param2} AND assign_staff_id=#{param3}  ;
+    </select>
+
+
+    <select id="statisticsTelNumByTime" parameterType="String"
+            resultType="int">
+         select COUNT(*)  from order_init
+        WHERE assign_time between #{param1} and #{param2} AND assign_staff_id=#{param3} and effective is not null ;
+    </select>
+
+    <select id="statisticsEffectiveNumByTime" parameterType="String"
+            resultType="int">
+       select COUNT(*)  from order_init
+        WHERE assign_time between #{param1} and #{param2} AND assign_staff_id=#{param3} and (effective='a.接通-有意到店' or effective='b.接通-待定');
+    </select>
+
+
+    <select id="statisticsFollowUpEffectiveNumByTime" parameterType="String"
+            resultType="int">
+        select COUNT(DISTINCT sale_id)  from follow_up
+        WHERE time_load between #{param1} and #{param2} AND   assign_staff_id=#{param3} and is_effective="有效"  ;
+    </select>
+
+    <select id="statisticsDirectShopNumByTime" parameterType="String"
+            resultType="int">
+        select COUNT(*)  from order_init
+        WHERE assign_time between #{param1} and #{param2} AND   assign_staff_id=#{param3} and to_shop="直接上门" ;
+    </select>
+
+    <select id="statisticsBroughtShopNumByTime" parameterType="String"
+            resultType="int">
+        select COUNT(*)  from order_init
+        WHERE assign_time between #{param1} and #{param2} AND   assign_staff_id=#{param3} and to_shop="带到访" ;
+    </select>
+
+    <select id="statisticsInvitationShopNumByTime" parameterType="String"
+            resultType="int">
+        select COUNT(*)  from saleorder
+        WHERE time_load between #{param1} and #{param2} AND  assign_staff_id=#{param3} and (arrive_time is not null  or  is_coming="上访") ;
+    </select>
+
+    <select id="statisticsActualShopNumByTime" parameterType="String"
+            resultType="int">
+        select COUNT(*)  from saleorder
+        WHERE time_load between #{param1} and #{param2} AND  assign_staff_id=#{param3}  and is_coming="上访";
+    </select>
+
+    <select id="statisticsSignUpNumByTime" parameterType="String"
+            resultType="int">
+        select COUNT(*)  from sign_sale_list
+        WHERE load_time between #{param1} and #{param2} AND  assign_staff_id=#{param3} ;
+    </select>
+    <!--public statistics end-->
+
+
+
+    <select id="statisticsTimeIsExist" resultType="com.better.wust.entity.StaffStatisticsTime">
+        select * from staff_statistics_time where staff_id=#{param1} and campus_id=#{param2};
+
+    </select>
+
+    <insert id="insertStatisticByTime"
+            parameterType="com.better.wust.entity.Staff">
+		INSERT INTO
+		staff_statistics_time(staff_id,campus_id,
+		sum_num,tel_num,
+		effective,follow_up_effective,
+		direct_shop,brought_shop,
+		invitation_shop,actual_shop,
+		sign_up,tel_effective_proportion,
+		to_shop_proportion,to_shop_to_sign_proportion,
+		time_start,time_end)
+		VALUES(#{staff_id},#{campus_id},
+		#{sum_num},#{tel_num},
+		#{effective},#{follow_up_effective},
+		#{direct_shop},#{brought_shop},
+		#{invitation_shop},#{actual_shop},
+		#{sign_up},#{tel_effective_proportion},
+		#{to_shop_proportion},#{to_shop_to_sign_proportion},
+		#{time_start},#{time_end});
+	</insert>
+
+
+    <update id="updateStatisticsByTime"
+            parameterType="com.better.wust.entity.StaffStatisticsTime">
+		UPDATE staff_statistics_time SET
+		sum_num=#{sum_num},
+		tel_num=#{tel_num},
+		effective=#{effective},
+		follow_up_effective=#{follow_up_effective},
+		direct_shop=#{direct_shop},
+		brought_shop=#{brought_shop},
+		invitation_shop=#{invitation_shop},
+		actual_shop=#{actual_shop},
+		sign_up=#{sign_up},
+		tel_effective_proportion=#{tel_effective_proportion},
+		to_shop_proportion=#{to_shop_proportion},
+		to_shop_to_sign_proportion=#{to_shop_to_sign_proportion},
+		time_start=#{time_start},
+		time_end=#{time_end}
+		WHERE
+		staff_id=#{staff_id} and campus_id=#{campus_id};
+	</update>
+
+
+    <select id="findAllStaffTimeStatisticsList"
+            parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.StaffStatisticsTime">
+        select * from staff_statistics_time_staff  WHERE
+        ${sql}
+        LIKE
+        ${key}
+        ORDER BY
+        ${field} ${order} limit
+        #{start},#{limit};
+    </select>
+
+
+    <select id="getAllStaffTimeStatisticsNumber"
+            resultType="int">
+        select count(*) from staff_statistics_time_staff
+        WHERE
+        ${sql}
+        LIKE
+        ${key};
+    </select>
+
+
+</mapper>

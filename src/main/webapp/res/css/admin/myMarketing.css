@@ -1,0 +1,9 @@
+@charset "UTF-8";
+.layui-body {
+    left: 0px;
+}
+
+.layui-form .content{
+    padding-left: 10px;
+    padding-right: 10px;
+}

@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.better.wust.dao.SaleDao">
+    <select id="selectAllSales" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.Sale">
+        select * from
+		saleorder WHERE
+		${sql} LIKE
+		${key}
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="selectSaleNumber" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(*) from
+		saleorder
+		WHERE
+		${sql}
+		LIKE
+		${key};
+    </select>
+
+	<update id="updateSale" parameterType="com.better.wust.entity.Sale">
+		UPDATE sale SET
+		relation=#{relation},stu_name=#{stu_name},
+		stu_age=#{stu_age},stu_grade=#{stu_grade},
+		stu_school=#{stu_school},address=#{address},
+		referrer=#{referrer},
+		course_need=#{course_need},sale_stage=#{sale_stage},
+		false_reason=#{false_reason},other_reason=#{other_reason},
+		other_remark=#{other_remark},is_coming=#{is_coming},
+		arrive_time=#{arrive_time},next_time=#{next_time}
+		WHERE
+		sale_id=#{sale_id};
+	</update>
+
+
+
+	<update id="updateOrderinitChannelStaff" parameterType="com.better.wust.entity.Sale">
+		UPDATE order_init SET
+		customer_name=#{customer_name},customer_contact=#{customer_contact},stu_name=#{stu_name},stu_age=#{stu_age},stu_school=#{stu_school},address=#{address}
+		WHERE order_init_id=( SELECT order_init_id from sale where  sale_id=#{sale_id});
+	</update>
+
+
+
+	<insert id="insertFollow" parameterType="com.better.wust.entity.Sale">
+		INSERT INTO
+		follow_up(follow_up_id,sale_id,is_effective,
+		contact_style,contact_number,assign_staff_id,
+		staff_name,judge_up,sale_stage_up,next_time_up,
+		result,time_load,false_reason,other_remark,is_coming,
+		arrive_time,other_reason)
+		VALUES(#{follow_up_id},#{sale_id},#{is_effective},
+		#{contact_style},#{contact_number},#{assign_staff_id},
+		#{staff_name},#{judge_up},#{sale_stage_up},#{next_time_up},
+		#{result},#{time_load},#{false_reason},#{other_remark},
+		#{is_coming},#{arrive_time},#{other_reason});
+	</insert>
+
+	<select id="selectLastFollow" resultType="String">
+		SELECT follow_up_id FROM
+		follow_up ORDER BY
+		follow_up_id DESC LIMIT 1;
+	</select>
+
+	<select id="selectAllFollows" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.FollowUp">
+ 		select * from
+		follow_up WHERE
+		${sql}
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="selectFollowNumber" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+		select count(*) from
+		follow_up
+		WHERE
+		${sql}
+		ORDER BY
+		${field}
+		${order};
+    </select>
+
+
+	<select id="selectAllSalesById" parameterType="com.better.wust.tools.entity.SelectEntity"
+					 resultType="com.better.wust.entity.Sale">
+        select * from
+		saleorder WHERE
+		${sql} LIKE
+		${key}
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="selectSaleNumberById" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(*) from
+		saleorder
+		WHERE
+		${sql}
+		LIKE
+		${key};
+    </select>
+
+
+	<select id="findAllComeToShopSaleById" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.Sale">
+        select * from
+		saleorder WHERE
+		${sql} LIKE
+		${key}
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="getAllComeToShopSaleNumberById" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(*) from
+		saleorder
+		WHERE
+		${sql}
+		LIKE
+		${key};
+    </select>
+
+	<select id="findNotComeToShopSaleById" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.Sale">
+        select * from
+		saleorder WHERE
+		${sql} LIKE
+		${key}
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="getNotComeToShopSaleNumberById" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(*) from
+		saleorder
+		WHERE
+		${sql}
+		LIKE
+		${key};
+    </select>
+
+	<select id="findHaveComeToShopSaleById" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.Sale">
+        select * from
+		saleorder WHERE
+		${sql} LIKE
+		${key}
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="getHaveComeToShopSaleNumberById" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(*) from
+		saleorder
+		WHERE
+		${sql}
+		LIKE
+		${key};
+    </select>
+
+	<select id="findHaveComeToShopSaleUnSignById" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.Sale">
+        select * from
+		saleorder WHERE
+		${sql} LIKE
+		${key}
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="getHaveComeToShopSaleUnSignNumberById" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(*) from
+		saleorder
+		WHERE
+		${sql}
+		LIKE
+		${key};
+    </select>
+
+
+
+
+
+
+
+
+
+
+
+
+	<select id="selectSaleById" parameterType="String"
+			resultType="com.better.wust.entity.Sale">
+        select * from saleorder WHERE sale_id = #{sale_id};
+    </select>
+
+	<select id="selectLastFollowById" parameterType="com.better.wust.entity.FollowUp" resultType="com.better.wust.entity.FollowUp">
+		SELECT sale_id,judge_up,sale_stage_up FROM
+		follow_up WHERE sale_id = #{sale_id} ORDER BY
+		time_load DESC LIMIT 1;
+	</select>
+
+
+	<update id="updateScreen_Image" parameterType="com.better.wust.entity.FollowUp">
+		update follow_up set
+		screen_image=#{screen_image}
+		WHERE
+		follow_up_id=#{follow_up_id};
+	</update>
+
+	<update id="updateSaleByFollow" parameterType="com.better.wust.entity.Sale">
+		UPDATE sale SET
+		next_time = #{param1},judge=#{param2},sale_stage=#{param3},false_reason=#{param5},is_coming=#{param6},arrive_time=#{param7},other_reason=#{param8}
+		WHERE sale_id=#{param4};
+	</update>
+
+
+	<update id="updateSaleBySign" parameterType="com.better.wust.entity.Sign">
+		UPDATE sale SET
+		relation=#{param1},stu_name=#{param2}
+		WHERE
+		sale_id=(select sale_id from sign_up where sign_id=#{param3});
+	</update>
+
+	<update id="updateOrderinitBySign" >
+		UPDATE order_init SET
+		customer_name=#{param1},customer_contact=#{param2},stu_name=#{param3}
+		WHERE
+		order_init_id=(select order_init_id from (select order_init_id from sign_sale_list where sign_id=#{param4}) b );
+	</update>
+
+
+
+
+	<update id="updateFollow" parameterType="com.better.wust.entity.FollowUp">
+		UPDATE follow_up SET
+		is_effective=#{is_effective}
+		WHERE
+		sale_id=#{sale_id};
+	</update>
+
+
+	<!--退课和转校-->
+
+
+	<select id="findAllStudentRefund" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.StudentClass">
+        select * from jw_student_course_list
+        WHERE ${sql}
+        LIKE
+		${key}
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="getAllStudentRefundNumber" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(*) from
+		jw_student_course_list
+		WHERE
+		${sql}
+		LIKE
+		${key};
+    </select>
+
+	<update id="finishStudentRefund" parameterType="int" >
+		update jw_student_course
+		set is_retire=3
+		where id=#{param1};
+	</update>
+
+
+
+
+
+	<select id="findAllStudentUpdateCampus" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.StudentClass">
+        select * from jw_student_course_list
+        WHERE ${sql}
+        LIKE
+		${key}
+		GROUP BY
+		student_id,transfer_campus_id
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="getAllStudentUpdateCampusNumber" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(DISTINCT student_id,transfer_campus_id) from jw_student_course_list
+        WHERE ${sql}
+        LIKE
+		${key}
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="getStudentAllRealBalance" parameterType="int" resultType="double">
+		select sum(real_balance) from jw_student_course where student_id=#{param1};
+	</select>
+
+	<select id="findStudentById" parameterType="int" resultType="com.better.wust.entity.Student">
+		select * from jw_student where id=#{param1};
+	</select>
+
+	<update id="finishStudentUpdateCampus" parameterType="int">
+		update jw_student_course
+		set is_retire=4
+		where student_id=#{param1} and is_retire=2;
+	</update>
+
+	<update id="updateStudentByUpdateCampus" parameterType="com.better.wust.entity.Student">
+		update jw_student
+		set
+		student_state=#{student_state},
+		campus_id=#{campus_id},update_time=#{update_time},
+		real_balance=#{real_balance}
+		where
+		id=#{id};
+	</update>
+
+
+	<update id="cleanStudentCourse" parameterType="String">
+		update jw_student
+		set
+		course_id=null
+		where
+		student_id=#{student_id};
+	</update>
+
+
+	<update id="cleanStudentRefundCourse" parameterType="String">
+		update jw_student
+		set
+		course_id=#{param2}
+		where
+		student_id=#{param1};
+	</update>
+
+</mapper>

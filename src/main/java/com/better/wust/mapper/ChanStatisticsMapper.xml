@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.better.wust.dao.ChanStatisticsDao">
+
+    <!--my-->
+
+
+    <select id="statisticsChannelEffectiveByTime" parameterType="String"
+            resultType="int">
+        select COUNT(*) AS `count` from orderinit_channel_staff
+        WHERE entry_real between #{param1} and #{param2} AND channel_id=#{param3} AND effective='a.接通-有意到店' ;
+    </select>
+
+    <select id="statisticsChannelWaitByTime" parameterType="String"
+            resultType="int">
+        select COUNT(*)  from orderinit_channel_staff
+        WHERE entry_real between #{param1} and #{param2} AND channel_id=#{param3} AND effective='b.接通-待定' ;
+    </select>
+
+    <select id="statisticsChannelUnEffectiveByTime" parameterType="String"
+            resultType="int">
+        select COUNT(*) AS `count` from orderinit_channel_staff
+        WHERE entry_real between #{param1} and #{param2} AND channel_id=#{param3} AND effective='c.接通-拒绝' ;
+    </select>
+
+    <select id="statisticsChannelUnContectByTime" parameterType="String"
+            resultType="int">
+        select COUNT(*) AS `count` from orderinit_channel_staff
+        WHERE entry_real between #{param1} and #{param2} AND channel_id=#{param3} AND effective='d.未接通' ;
+    </select>
+
+    <select id="statisticsChannelUncallByTime" parameterType="String"
+            resultType="int">
+        select COUNT(*) AS `count` from orderinit_channel_staff
+        WHERE entry_real between #{param1} and #{param2} AND channel_id=#{param3} AND effective is null ;
+    </select>
+
+    <select id="statisticsChannelSumnumByTime" parameterType="String"
+            resultType="int">
+        select COUNT(*) AS `count` from orderinit_channel_staff
+        WHERE entry_real between #{param1} and #{param2} AND channel_id=#{param3}  ;
+    </select>
+
+    <select id="chanStatisticIsExit" resultType="com.better.wust.entity.ChanStatistics">
+        select * from chan_statistic where channel_id=#{param1} and campus_id=#{param2};
+    </select>
+    
+    <update id="updateStatisticsByTime"
+            parameterType="com.better.wust.entity.ChanStatistics">
+		UPDATE chan_statistic SET
+		channel_type=#{channel_type},
+		onOffline=#{onOffline},
+		count_sumnum=#{count_sumnum},
+		count_effective=#{count_effective},
+		count_wait=#{count_wait},
+		count_uneffective=#{count_uneffective},
+		count_uncontect=#{count_uncontect},
+		count_uncall=#{count_uncall},
+		one_proportion=#{one_proportion},
+		two_proportion=#{two_proportion},
+		three_proportion=#{three_proportion},
+		four_proportion=#{four_proportion},
+		five_proportion=#{five_proportion},
+		time_start=#{time_start},
+		time_end=#{time_end}
+		WHERE
+		channel_id=#{channel_id} and campus_id=#{campus_id};
+	</update>
+
+    <insert id="insertChannelStatistics"
+            parameterType="com.better.wust.entity.ChanStatistics">
+		INSERT INTO
+		chan_statistic(channel_id,onOffline,channel_type,campus_id,
+		count_sumnum,count_effective,count_wait,count_uneffective,count_uncontect,count_uncall,one_proportion,two_proportion,three_proportion,
+		four_proportion,five_proportion,time_start,time_end)
+		VALUES(#{channel_id},#{onOffline},#{channel_type},#{campus_id},
+		#{count_sumnum},#{count_effective},#{count_wait},#{count_uneffective},#{count_uncontect},#{count_uncall},#{one_proportion},#{two_proportion},#{three_proportion},
+		#{four_proportion},#{five_proportion},#{time_start},#{time_end});
+	</insert>
+
+
+    <select id="findAllChanStatisticsList" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.ChanStatistics">
+        select * from chan_statistic
+        WHERE
+        ${sql}
+        LIKE
+        ${key}
+        ORDER BY
+        ${field} ${order} limit
+        #{start},#{limit};
+    </select>
+
+    <select id="getAllChanStatisticsNumber" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="int">
+        select count(*) from chan_statistic
+        WHERE
+        ${sql}
+        LIKE
+        ${key};
+    </select>
+
+
+
+</mapper>

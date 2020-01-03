@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.better.wust.dao.SaleOneYearDao">
+
+
+    <!--销售数据 First-->
+    <select id="statisTargetSaleMoneyByMonth" resultType="Double">
+        select SUM(subject_task)  from subject_task_list
+        WHERE `month` = #{param1}   and campus_id=#{param2}  ;
+    </select>
+
+    <select id="statisActualSaleMoneyByMonth"
+            resultType="Double">
+        select SUM(final_price)  from sign_sale_list
+        WHERE load_time like  CONCAT(CONCAT(#{param1}),'%')  and campus_id=#{param2}  ;
+    </select>
+
+    <select id="statisTargetInitorderNumByMonth" resultType="Integer">
+        select  COUNT(*) from orderinit_channel_staff
+        WHERE tel_time like  CONCAT(CONCAT(#{param1}),'%')  and campus_id=#{param2}  and to_shop is null ;
+    </select>
+
+
+    <select id="statisActualInitorderNumByMonth"
+            resultType="Integer">
+        select  COUNT(*) from orderinit_channel_staff
+        WHERE tel_time like  CONCAT(CONCAT(#{param1}),'%')  and campus_id=#{param2}   ;
+    </select>
+
+    <select id="statisSignUpNumByMonth"
+            resultType="Integer">
+        select COUNT(*)  from jw_student
+        WHERE create_time like  CONCAT(CONCAT(#{param1}),'%')  AND  campus_id=#{param2} ;
+    </select>
+
+    <select id="statisRefoundNumByMonth"
+            resultType="Integer">
+        select COUNT(*) from
+        (select COUNT(*)  from jw_student_course_list
+        WHERE update_loadtime like  CONCAT(CONCAT(#{param1}),'%')
+        AND campus_id=#{param2}
+        AND (is_retire='1' or is_retire='3')  GROUP  BY  student_id) a ;
+    </select>
+
+    <select id="statisRefoundMoneyByMonth"
+            resultType="Double">
+        select SUM(remain_course_num*deal_unit_price)  from jw_student_course_list
+        WHERE update_loadtime like  CONCAT(CONCAT(#{param1}),'%')
+        AND campus_id=#{param2}
+        AND (is_retire='1' or is_retire='3') ;
+
+    </select>
+
+
+    <update id="updateSaleOneYearFirst" parameterType="com.better.wust.entity.SaleOneYearFirst">
+        update saleoneyear_first set
+        campus_id=#{campus_id},target_sale_money=#{target_sale_money},
+        actual_sale_money=#{actual_sale_money},proportion_sale_money=#{proportion_sale_money},
+        proportion_sign_up=#{proportion_sign_up},target_initorder_num=#{target_initorder_num},
+        actual_initorder_num=#{actual_initorder_num},sign_up_num=#{sign_up_num},
+        average_sale_money=#{average_sale_money},refund_num=#{refund_num},
+        refund_money=#{refund_money},proportion_refund=#{proportion_refund}
+        where `month` =  SUBSTRING(#{month},-2) ;
+    </update>
+
+    <select id="findAllSaleOneYearFirstList" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.SaleOneYearFirst">
+        select * from saleoneyear_first_list
+        WHERE
+        ${sql}
+        LIKE
+        ${key}
+        ORDER BY
+        ${field} ${order} limit
+        #{start},#{limit};
+    </select>
+
+    <select id="getAllSaleOneYearFirstNum"
+            resultType="Integer">
+        select count(*) from saleoneyear_first_list
+        WHERE
+        ${sql}
+        LIKE
+        ${key};
+    </select>
+
+
+    <!--报名人数产出 Second-->
+
+    <select id="statisticSubjectSaleNumByMonth"
+                     resultType="Integer">
+        select COUNT(*)  from (select COUNT(*)  from sign_course_list
+        WHERE create_time like  CONCAT(CONCAT(#{param1}),'%')  AND subject_id=#{param2}  AND  campus_id=#{param3} GROUP BY student_id) a;
+    </select>
+
+    <select id="statisticSubjectSaleMoneyByMonth"
+            resultType="Double">
+        select SUM(deal_price)  from sign_course_list
+        WHERE create_time like  CONCAT(CONCAT(#{param1}),'%')  AND subject_id=#{param2}  AND  campus_id=#{param3} ;
+    </select>
+
+    <select id="checkSubjectisExit"
+            resultType="com.better.wust.entity.SaleOneYearSecond">
+        select *  from saleoneyear_second
+        WHERE  subject_id=#{param1}  AND  campus_id=#{param2} ;
+    </select>
+
+    <update id="updateSaleOneYearSecond" parameterType="com.better.wust.entity.SaleOneYearSecond">
+        update saleoneyear_second set
+        January_subject_sale_num=#{January_subject_sale_num},January_subject_sale_money=#{January_subject_sale_money},
+        February_subject_sale_num=#{February_subject_sale_num},February_subject_sale_money=#{February_subject_sale_money},
+        March_subject_sale_num=#{March_subject_sale_num},March_subject_sale_money=#{March_subject_sale_money},
+        April_subject_sale_num=#{April_subject_sale_num},April_subject_sale_money=#{April_subject_sale_money},
+        May_subject_sale_num=#{May_subject_sale_num},May_subject_sale_money=#{May_subject_sale_money},
+        June_subject_sale_num=#{June_subject_sale_num},June_subject_sale_money=#{June_subject_sale_money},
+        July_subject_sale_num=#{July_subject_sale_num},July_subject_sale_money=#{July_subject_sale_money},
+        August_subject_sale_num=#{August_subject_sale_num},August_subject_sale_money=#{August_subject_sale_money},
+        September_subject_sale_num=#{September_subject_sale_num},September_subject_sale_money=#{September_subject_sale_money},
+        October_subject_sale_num=#{October_subject_sale_num},October_subject_sale_money=#{October_subject_sale_money},
+        November_subject_sale_num=#{November_subject_sale_num},November_subject_sale_money=#{November_subject_sale_money},
+        December_subject_sale_num=#{December_subject_sale_num},December_subject_sale_money=#{December_subject_sale_money}
+        where subject_id=#{subject_id} and campus_id=#{campus_id};
+
+
+    </update>
+
+    <insert id="insertSaleOneYearSecond" parameterType="com.better.wust.entity.SaleOneYearSecond">
+        insert saleoneyear_second (subject_id,campus_id,
+        January_subject_sale_num,January_subject_sale_money,
+        February_subject_sale_num,February_subject_sale_money,
+        March_subject_sale_num,March_subject_sale_money,
+        April_subject_sale_num,April_subject_sale_money,
+        May_subject_sale_num,May_subject_sale_money,
+        June_subject_sale_num,June_subject_sale_money,
+        July_subject_sale_num,July_subject_sale_money,
+        August_subject_sale_num,August_subject_sale_money,
+        September_subject_sale_num,September_subject_sale_money,
+        October_subject_sale_num,October_subject_sale_money,
+        November_subject_sale_num,November_subject_sale_money,
+        December_subject_sale_num,December_subject_sale_money
+        )
+        values (#{subject_id},#{campus_id},
+        #{January_subject_sale_num},#{January_subject_sale_money},
+        #{February_subject_sale_num},#{February_subject_sale_money},
+        #{March_subject_sale_num},#{March_subject_sale_money},
+        #{April_subject_sale_num},#{April_subject_sale_money},
+        #{May_subject_sale_num},#{May_subject_sale_money},
+        #{June_subject_sale_num},#{June_subject_sale_money},
+        #{July_subject_sale_num},#{July_subject_sale_money},
+        #{August_subject_sale_num},#{August_subject_sale_money},
+        #{September_subject_sale_num},#{September_subject_sale_money},
+        #{October_subject_sale_num},#{October_subject_sale_money},
+        #{November_subject_sale_num},#{November_subject_sale_money},
+        #{December_subject_sale_num},#{December_subject_sale_money}
+        );
+    </insert>
+
+    <select id="findAllSaleOneYearSecondList" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.SaleOneYearSecond">
+        select * from saleoneyear_second_list
+        WHERE
+        ${sql}
+        LIKE
+        ${key}
+        ORDER BY
+        ${field} ${order} limit
+        #{start},#{limit};
+    </select>
+
+    <select id="getAllSaleOneYearSecondNum"
+            resultType="Integer">
+        select count(*) from saleoneyear_second_list
+        WHERE
+        ${sql}
+        LIKE
+        ${key};
+    </select>
+
+
+    <!--年龄层人数及产出 third-->
+
+    <select id="statisticStudentSignNumByYear"
+            resultType="Integer">
+         select COUNT(*)  from
+         (select COUNT(*)  from sign_sale_list
+        WHERE stu_age BETWEEN #{param1} and #{param2} AND   campus_id=#{param3} AND load_time like  CONCAT(CONCAT(#{param4}),'%') GROUP BY student_id) a;
+    </select>
+
+    <select id="statisticStudentSignMoneyByYear"
+            resultType="Double">
+        select SUM(final_price)  from sign_sale_list
+        WHERE stu_age BETWEEN #{param1} and #{param2} AND   campus_id=#{param3} AND load_time like  CONCAT(CONCAT(#{param4}),'%') AND final_price IS NOT NULL;
+    </select>
+
+    <update id="updateSaleOneYearThird" parameterType="com.better.wust.entity.SaleOneYearThird">
+        update saleoneyear_third set
+        campus_id=#{campus_id},
+        four_five_num=#{four_five_num},four_five_sale_money=#{four_five_sale_money},
+        six_seven_num=#{six_seven_num},six_seven_sale_money=#{six_seven_sale_money},
+        eight_nine_num=#{eight_nine_num},eight_nine_sale_money=#{eight_nine_sale_money},
+        ten_eleven_num=#{ten_eleven_num},ten_eleven_sale_money=#{ten_eleven_sale_money},
+        twelve_more_num=#{twelve_more_num},twelve_more_sale_money=#{twelve_more_sale_money}
+        where `month` =  SUBSTRING(#{month},-2) ;
+    </update>
+
+    <select id="findAllSaleOneYearThirdList" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.SaleOneYearThird">
+        select * from saleoneyear_third_list
+        WHERE
+        ${sql}
+        LIKE
+        ${key}
+        ORDER BY
+        ${field} ${order} limit
+        #{start},#{limit};
+    </select>
+
+    <select id="getAllSaleOneYearThirdNum"
+            resultType="Integer">
+        select count(*) from saleoneyear_third_list
+        WHERE
+        ${sql}
+        LIKE
+        ${key};
+    </select>
+
+</mapper>

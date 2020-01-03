@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.better.wust.dao.StaffDao">
+    <select id="selectAllStaffs" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.Staff">
+        select * from
+		stafflogin WHERE
+		${sql} LIKE
+		${key}
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="selectStaffNumber" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(*) from
+		stafflogin
+		WHERE
+		${sql}
+		LIKE
+		${key};
+    </select>
+
+
+    <select id="selectStaffById" resultType="com.better.wust.entity.Staff" parameterType="String">
+        select * from stafflogin where staff_id=#{id};
+    </select>
+
+
+
+	<!--返回最后一个用工的工号-->
+    <select id="selectLastStaffNumber" resultType="String">
+        SELECT staff_id FROM
+		staff ORDER BY
+		staff_id DESC LIMIT 1;
+    </select>
+
+
+	<!--查找所有校区-->
+	<select id="selectAllCampusById" resultType="com.better.wust.entity.Staff">
+        SELECT campus_id,campus_name FROM campus_manage_ca WHERE staff_id = #{param1}
+        AND CONCAT(IFNULL(campus_id,'')) LIKE CONCAT(CONCAT('%',#{param2}),'%');
+    </select>
+
+    <insert id="insertStaff"
+            parameterType="com.better.wust.entity.Staff">
+		INSERT INTO
+		staff(staff_id,staff_name,staff_depart,staff_post,campus_id)
+		VALUES(#{staff_id},#{staff_name},#{staff_depart},#{staff_post},#{campus_id});
+	</insert>
+
+	<insert id="insertLogin"
+			parameterType="com.better.wust.entity.Staff">
+		INSERT INTO
+		login(staff_id,password,power)
+		VALUES(#{staff_id},#{password},#{power});
+	</insert>
+
+
+	<insert id="insertCampusManage"
+			parameterType="com.better.wust.entity.Staff">
+		INSERT INTO
+		campus_manage(staff_id,campus_id)
+		VALUES(#{staff_id},#{campus_id});
+	</insert>
+
+
+
+
+    <update id="updateStaff"
+            parameterType="com.better.wust.entity.Staff">
+		UPDATE staff SET
+		staff_name=#{staff_name},staff_depart=#{staff_depart},staff_post=#{staff_post}
+		WHERE staff_id=#{staff_id};
+	</update>
+
+	<update id="updateLogin"
+			parameterType="com.better.wust.entity.Staff">
+		UPDATE login SET password=#{password}
+		WHERE staff_id=#{staff_id};
+	</update>
+
+
+	<select id="selectAllSaleStaffs" parameterType="String" resultType="com.better.wust.entity.Staff">
+        SELECT staff_id,staff_name,campus_id,campus_name FROM stafflogin
+        WHERE staff_depart='销售部'
+        and campus_id IN (SELECT campus_id FROM campus_manage WHERE staff_id = #{param1})
+        AND CONCAT(IFNULL(campus_id,'')) LIKE CONCAT(CONCAT('%',#{param2}),'%');
+    </select>
+
+	<select id="verification" resultType="int" parameterType="com.better.wust.entity.Staff">
+        select count(*) from
+		login WHERE staff_id = #{staff_id} and password = #{password};
+    </select>
+
+	<select id="selectPowerById" resultType="String" parameterType="com.better.wust.entity.Staff">
+        select `power` from
+		login WHERE staff_id = #{staff_id} and password = #{password};
+    </select>
+
+	<select id="selectStaffData" resultType="com.better.wust.entity.Staff" parameterType="String">
+        select * from stafflogin where staff_id=#{id};
+    </select>
+
+
+	<!--删除员工-->
+	<delete id="deleteStaff" parameterType="String">
+		delete from staff where staff_id=#{staff_id};
+	</delete>
+
+	<delete id="deleteLogin" parameterType="String">
+		delete from login where staff_id=#{staff_id};
+	</delete>
+
+
+	<delete id="deleteCampusManage" parameterType="String">
+		delete from campus_manage where staff_id=#{staff_id};
+	</delete>
+
+	<!--查找某个员工的所有月销售任务   用于员工销售  查看自己的任务-->
+	<select id="getSaleTaskById" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.SaleTask">
+        select * from
+		sale_task_staff WHERE
+		${sql} LIKE
+		${key}
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="getSaleTaskByIdNumber" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(*) from
+		sale_task_staff
+		WHERE
+		${sql}
+		LIKE
+		${key}
+    </select>
+
+
+
+
+
+
+
+
+
+
+
+
+	<!--员工任务分配 -->
+
+	<select id="checkedTask" resultType="com.better.wust.entity.SaleTask">
+        select * from sale_task_staff where staff_id=#{param1} and `month` = #{param2};
+    </select>
+
+	<insert id="insertSaleTask"
+			parameterType="com.better.wust.entity.SaleTask">
+		INSERT INTO
+		sale_task(staff_id,`month`,month_task,week_one,week_two,week_three,week_four,week_five,week_six,load_time)
+		VALUES(#{staff_id},#{month},#{month_task},#{week_one},#{week_two},#{week_three},#{week_four},#{week_five},#{week_six},#{load_time});
+	</insert>
+
+	<select id="getAllSaleTask" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.SaleTask">
+        select * from
+		sale_task_staff WHERE
+		${sql} LIKE
+		${key}
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="getAllSaleTaskNumber" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(*) from
+		sale_task_staff
+		WHERE
+		${sql}
+		LIKE
+		${key};
+    </select>
+
+	<update id="updateSaleTask"
+			parameterType="com.better.wust.entity.SaleTask">
+		UPDATE sale_task SET month_task=#{month_task},week_one=#{week_one},week_two=#{week_two},
+		week_three=#{week_three},week_four=#{week_four},week_five=#{week_five},week_six=#{week_six},load_time=#{load_time}
+		WHERE staff_id=#{staff_id} and `month` = #{month};
+	</update>
+
+
+
+
+
+
+
+
+
+
+
+
+	<!--课程任务分配 月-->
+
+	<select id="checkedTaskCourse" resultType="com.better.wust.entity.SteamStatisticsMonth">
+        select * from steam_statistics_month_list where campus_id=#{param1} and `month` = #{param2}
+        and subject_id = #{param3} and course_id = #{param4};
+    </select>
+
+	<insert id="insertSaleTaskCourse"
+			parameterType="com.better.wust.entity.SteamStatisticsMonth">
+		INSERT INTO
+		steam_statistics_month(campus_id,`month`,subject_id,course_id,course_task,load_time)
+		VALUES(#{campus_id},#{month},#{subject_id},#{course_id},#{course_task},#{load_time});
+	</insert>
+
+	<select id="findAllSaleTaskCourseList" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.SteamStatisticsMonth">
+        select * from
+		steam_statistics_month_list WHERE
+		${sql} LIKE
+		${key}
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="getAllSaleTaskCourseNumber" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(*) from
+		steam_statistics_month_list
+		WHERE
+		${sql}
+		LIKE
+		${key};
+    </select>
+
+	<update id="updateSaleTaskCourse"
+			parameterType="com.better.wust.entity.SteamStatisticsMonth">
+		UPDATE steam_statistics_month SET course_task=#{course_task},load_time = #{load_time}
+		WHERE campus_id=#{campus_id} and `month` = #{month} and subject_id = #{subject_id} and course_id = #{course_id};
+	</update>
+
+
+
+
+
+
+	<!--科目任务分配 月-->
+
+	<select id="checkedTaskSubjectIsExit" resultType="com.better.wust.entity.SubjectTask">
+        select * from subject_task_list where
+        `month` = #{param1} and subject_id = #{param2} and campus_id=#{param3};
+    </select>
+
+	<insert id="insertSaleTaskSubject"
+			parameterType="com.better.wust.entity.SubjectTask">
+		INSERT INTO
+		jw_subject_task(campus_id,`month`,subject_id,subject_task,load_time)
+		VALUES(#{campus_id},#{month},#{subject_id},#{subject_task},#{load_time});
+	</insert>
+
+	<update id="updateSaleTaskSubject"
+			parameterType="com.better.wust.entity.SubjectTask">
+		UPDATE jw_subject_task SET subject_task=#{subject_task},load_time = #{load_time}
+		WHERE campus_id=#{campus_id} and `month` = #{month} and subject_id = #{subject_id} ;
+	</update>
+
+	<select id="findAllSaleTaskSubjectList" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.SubjectTask">
+        select * from
+		subject_task_list WHERE
+		${sql} LIKE
+		${key}
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="getAllSaleTaskSubjectNumber" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(*) from
+		subject_task_list
+		WHERE
+		${sql}
+		LIKE
+		${key};
+    </select>
+
+
+
+	<update id="updateStaffByMyself"
+			parameterType="com.better.wust.entity.Staff">
+		UPDATE staff SET
+		staff_name=#{staff_name},staff_contact=#{staff_contact},staff_weixin=#{staff_weixin},staff_email=#{staff_email}
+		WHERE staff_id=#{staff_id};
+	</update>
+
+	<update id="updateStaffOwnPassword"
+			parameterType="String">
+		UPDATE login SET
+		password=#{param2}
+		WHERE staff_id=#{param1};
+	</update>
+
+
+
+	<select id="checkOldPwd"  resultType="int">
+		select case when password=#{param2} then 1 else 2 end   from login where staff_id=#{param1} ;
+	</select>
+
+</mapper>

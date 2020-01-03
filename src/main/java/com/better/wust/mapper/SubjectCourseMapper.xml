@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.better.wust.dao.SubjectCourseDao">
+
+
+    <select id="findAllSubject" resultType="com.better.wust.entity.Subject">
+        SELECT * FROM jw_subject a WHERE (SELECT COUNT(*) FROM jw_subject b WHERE a.`Id`=b.`parent_id`)=0 AND a.`STATE`='0';
+    </select>
+
+
+    <!--科目统计-->
+
+    <select id="statisticsSubjectSaleTaskByTime"
+            resultType="Double">
+        select SUM(subject_task)  from subject_task_list
+        WHERE `month` between #{param1} and #{param2}  and subject_id= #{param3} and campus_id=#{param4}  ;
+    </select>
+
+    <select id="statisticsSubjectSaleMoneyByTime"
+            resultType="Double">
+        select SUM(totalPrice)  from sign_course_list
+        WHERE create_time between #{param1} and #{param2}  and subject_id= #{param3} and campus_id=#{param4}  ;
+    </select>
+
+    <select id="statisticsSubjectSigUpNumByTime"
+            resultType="int">
+         select COUNT(*)  from sign_course_list
+        WHERE create_time between #{param1} and #{param2}  and subject_id= #{param3} and campus_id=#{param4}  ;
+    </select>
+
+    <select id="statisticsSubjectIsExist" resultType="com.better.wust.entity.SubjectStatistics">
+        select * from jw_subject_statistic
+        where subject_id= #{param1} and campus_id=#{param2} ;
+    </select>
+
+    <insert id="insertSubjectStatistic" parameterType="com.better.wust.entity.SubjectStatistics">
+        insert into  jw_subject_statistic(
+        campus_id,subject_id,
+        subject_task_money,subject_sale_money,
+        subject_finish_proportion,subject_signup_num,
+        time_start,time_end
+        )
+        values (
+        #{campus_id},#{subject_id},
+        #{subject_task_money},#{subject_sale_money},
+        #{subject_finish_proportion},#{subject_signup_num},
+        #{time_start},#{time_end}
+        );
+
+
+    </insert>
+
+    <update id="updateSubjectStatisticsByTime" parameterType="com.better.wust.entity.SubjectStatistics">
+        update jw_subject_statistic
+        set
+        subject_task_money=#{subject_task_money},subject_sale_money=#{subject_sale_money},
+        subject_finish_proportion=#{subject_finish_proportion},subject_signup_num=#{subject_signup_num},
+        time_start=#{time_start},time_end=#{time_end}
+        where
+        campus_id=#{campus_id} and subject_id=#{subject_id};
+    </update>
+
+    <select id="findAllSubjectStatisticsList" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.SubjectStatistics">
+        select * from subject_statistics_list
+        WHERE
+        ${sql}
+        LIKE
+        ${key}
+        ORDER BY
+        ${field} ${order} limit
+        #{start},#{limit};
+    </select>
+
+    <select id="getAllSubjectStatisticsListNumber"
+            resultType="int">
+        select count(*) from subject_statistics_list
+        WHERE
+        ${sql}
+        LIKE
+        ${key};
+    </select>
+
+
+
+
+    <!--课程统计-->
+
+    <select id="statisticsCourseSaleTaskByTime"
+            resultType="Double">
+        select SUM(course_task)  from steam_statistics_month_list
+        WHERE `month` between #{param1} and #{param2}  and course_id= #{param3} and campus_id=#{param4}  ;
+    </select>
+
+    <select id="statisticsCourseSaleMoneyByTime"
+            resultType="Double">
+        select SUM(totalPrice)  from sign_course_list
+        WHERE create_time between #{param1} and #{param2}  and course_id= #{param3} and campus_id=#{param4}  ;
+    </select>
+
+    <select id="statisticsCourseSigUpNumByTime"
+            resultType="int">
+         select COUNT(*)  from sign_course_list
+        WHERE create_time between #{param1} and #{param2}  and course_id= #{param3} and campus_id=#{param4}  ;
+    </select>
+
+    <update id="updateStatisticsByTime"
+            parameterType="com.better.wust.entity.CourseStatistics">
+		UPDATE course_statistics SET
+		course_task_money=#{course_task_money},
+		course_sale_money=#{course_sale_money},
+		course_signup_num=#{course_signup_num},
+		course_finish_proportion=#{course_finish_proportion},
+		time_start=#{time_start},
+		time_end=#{time_end}
+		WHERE
+		course_id=#{course_id} and campus_id=#{campus_id};
+	</update>
+
+    <select id="findAllCourseStatisticsList" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.CourseStatistics">
+        select * from course_statistics_list
+        WHERE
+        ${sql}
+        LIKE
+        ${key}
+        ORDER BY
+        ${field} ${order} limit
+        #{start},#{limit};
+    </select>
+
+    <select id="getAllCourseStatisticsListNumber"
+            resultType="int">
+        select count(*) from course_statistics_list
+        WHERE
+        ${sql}
+        LIKE
+        ${key};
+    </select>
+
+    <select id="findAllCourseStatistics"
+            resultType="com.better.wust.entity.CourseStatistics">
+        select * from course_statistics where campus_id=#{param1}  ;
+    </select>
+
+
+</mapper>

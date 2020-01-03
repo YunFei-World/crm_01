@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.better.wust.dao.OrderinitDao">
+    <select id="selectAllOrder" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.Orderinit">
+        select * from orderinit_channel_staff
+		WHERE
+		${sql}
+		LIKE
+		${key}
+		ORDER BY
+		${field} ${order} limit
+		#{start},#{limit};
+    </select>
+
+    <select id="selectOrderNum" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="int">
+        select count(*) from orderinit_channel_staff WHERE ${sql} LIKE ${key};
+    </select>
+
+
+	<insert id="insertOrderinit" parameterType="com.better.wust.entity.Orderinit">
+		INSERT INTO
+		order_init(order_init_id,order_staff_id,
+		marketing_id,channel_id,
+		customer_name,customer_contact,
+		collect_name,collect_tel,
+		stu_name,stu_age,
+		stu_school,address,
+		entry_real,tel_time,effective,weixin,to_shop)
+		VALUES(#{order_init_id},#{order_staff_id},
+		#{marketing_id},#{channel_id},
+		#{customer_name},#{customer_contact},
+		#{collect_name},#{collect_tel},
+		#{stu_name},#{stu_age},
+		#{stu_school},#{address},
+		#{entry_real},#{tel_time},#{effective},#{weixin},#{to_shop});
+	</insert>
+
+    <update id="updateOrderinitByAdmin"
+            parameterType="com.better.wust.entity.Orderinit">
+		UPDATE order_init
+		SET
+		customer_name=#{customer_name},customer_contact=#{customer_contact},
+		stu_name=#{stu_name},stu_age=#{stu_age},
+		stu_school=#{stu_school},address=#{address},
+		channel_id=#{channel_id},marketing_id=#{marketing_id},
+		collect_name=#{collect_name},collect_tel=#{collect_tel}
+		WHERE
+		order_init_id=#{order_init_id};
+	</update>
+
+	<update id="updateOrderinitByMark"
+			parameterType="com.better.wust.entity.Orderinit">
+		UPDATE order_init SET
+		customer_name=#{customer_name},customer_contact=#{customer_contact},
+		stu_name=#{stu_name},stu_age=#{stu_age},
+		stu_school=#{stu_school},address=#{address},
+		channel_id=#{channel_id},marketing_id=#{marketing_id},
+		collect_name=#{collect_name},collect_tel=#{collect_tel}
+		WHERE
+		order_init_id=#{order_init_id};
+	</update>
+
+	<update id="updateOrderinitByEffecitve"
+			parameterType="com.better.wust.entity.Orderinit">
+		UPDATE order_init SET
+		customer_name=#{customer_name},customer_contact = #{customer_contact},
+		effective = #{effective},weixin=#{weixin},tel_time=#{tel_time}
+		WHERE
+		order_init_id=#{order_init_id};
+	</update>
+
+    <update id="assignOrders">
+		UPDATE order_init SET
+		state = '已分配',assign_staff_id=#{param2},assign_time = #{param3}
+		WHERE order_init_id=#{param1};
+	</update>
+
+
+
+
+
+    <select id="checkedOrderState" resultType="String">
+        select state from orderinit_channel_staff WHERE order_init_id = #{id};
+    </select>
+
+    <insert id="insertSale">
+		INSERT INTO
+		sale(sale_id,order_init_id,time_load)
+		VALUES(#{param1},#{param2},#{param3});
+	</insert>
+
+    <select id="selectSaleLastId" resultType="String">
+		select sale_id from
+		sale order by
+		sale_id DESC limit 1;
+	</select>
+
+
+
+	<select id="selectOrderinitLastId" resultType="String">
+		select order_init_id from
+		order_init order by
+		order_init_id DESC limit 1;
+	</select>
+
+	<select id="selectStaffIdById" resultType="String" parameterType="String">
+		select assign_staff_id from
+		order_init where order_init_id = #{id};
+	</select>
+
+	<select id="selectAllOrderById" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.Orderinit">
+        select * from orderinit_channel_staff
+		WHERE
+		${sql}
+		LIKE
+		${key}
+		ORDER BY
+		${field} ${order} limit
+		#{start},#{limit};
+    </select>
+
+	<select id="selectOrderNumById" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="int">
+        select count(*) from orderinit_channel_staff WHERE ${sql} LIKE ${key};
+    </select>
+
+	<select id="selectOrderNumByInitId" parameterType="String"
+			resultType="int">
+        select count(*) from sale WHERE order_init_id=#{order_init_id};
+    </select>
+
+
+
+
+
+	<select id="selectIdByType" resultType="String" parameterType="String">
+		select channel_id from
+		channel where channel_type = #{channel_type};
+	</select>
+
+
+	<select id="getMarketingIdByChannelAndMarketingName" resultType="String" parameterType="String">
+		select marketing_id from
+		marketing where  marketing_name=#{param1} and channel_id = #{param2};
+	</select>
+
+
+	<select id="selectOrderByAssginId" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.Orderinit">
+        select * from orderinit_sale_sign
+		WHERE
+		${sql}
+		LIKE
+		${key}
+		ORDER BY
+		${field} ${order} limit
+		#{start},#{limit};
+    </select>
+
+	<select id="selectOrderNumByAssginId" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="int">
+        select count(*) from orderinit_sale_sign WHERE ${sql} LIKE ${key};
+    </select>
+
+
+
+
+
+<!--销售与初始单转换-->
+
+	<update id="transformOrders" parameterType="String">
+		UPDATE order_init SET assign_staff_id=#{param2}
+		WHERE order_init_id=#{param1};
+	</update>
+
+	<update id="transformSales" parameterType="String">
+		UPDATE order_init SET assign_staff_id=#{param2}
+		WHERE order_init_id=#{param1};
+	</update>
+
+
+	<select id="findAllOrderinit" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.Orderinit">
+        select * from orderinit_channel_staff
+		WHERE
+		${sql}
+		LIKE
+		${key}
+		ORDER BY
+		${field} ${order} limit
+		#{start},#{limit};
+    </select>
+
+	<select id="getAllOrderinitNum" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="int">
+        select count(*) from orderinit_channel_staff
+        WHERE
+        ${sql}
+        LIKE
+        ${key};
+    </select>
+
+
+
+
+
+	<!--毛单跟踪-->
+	<select id="findSaleByOrderinit" parameterType="String"
+			resultType="com.better.wust.entity.Sale">
+        select * from saleorder WHERE order_init_id = #{order_init_id};
+    </select>
+
+	<select id="findAllMyOrderInitStatisticsList" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.OrderInitStatistics">
+        select * from order_init_own_statistic
+        WHERE
+        ${sql}
+        LIKE
+        ${key}
+        ORDER BY
+        ${field} ${order} limit
+        #{start},#{limit};
+    </select>
+
+	<select id="getAllMyOrderInitStatisticsNumber" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="int">
+        select count(*) from order_init_own_statistic
+        WHERE
+        ${sql}
+        LIKE
+        ${key};
+    </select>
+
+	<select id="statisticsOrderinitStateOneByTime" parameterType="String" resultType="int">
+		select COUNT(*)  from orderinit_channel_staff
+        WHERE entry_real between #{param1} and #{param2} AND order_staff_id=#{param3} AND effective='a.接通-有意到店' ;
+	</select>
+
+	<select id="statisticsOrderinitStateTwoByTime" parameterType="String" resultType="int">
+		select COUNT(*)  from orderinit_channel_staff
+        WHERE entry_real between #{param1} and #{param2} AND order_staff_id=#{param3} AND effective='b.接通-待定' ;
+	</select>
+
+	<select id="statisticsOrderinitStateThreeByTime" parameterType="String" resultType="int">
+		select COUNT(*)  from orderinit_channel_staff
+        WHERE entry_real between #{param1} and #{param2} AND order_staff_id=#{param3} AND effective='c.接通-拒绝' ;
+	</select>
+
+	<select id="statisticsOrderinitStateFourByTime" parameterType="String" resultType="int">
+		select COUNT(*)  from orderinit_channel_staff
+        WHERE entry_real between #{param1} and #{param2} AND order_staff_id=#{param3} AND effective='d.未接通' ;
+	</select>
+
+
+	<select id="statisticsOrderinitSumnumByTime" parameterType="String" resultType="int">
+		select COUNT(*)  from orderinit_channel_staff
+        WHERE entry_real between #{param1} and #{param2} AND order_staff_id=#{param3} ;
+	</select>
+
+	<select id="orderStatisticIsExit" resultType="com.better.wust.entity.OrderInitStatistics" parameterType="String">
+		select * from order_init_own_statistic where staff_id=#{staff_id};
+	</select>
+
+
+	<update id="updateStatisticsByTime" parameterType="com.better.wust.entity.OrderInitStatistics">
+		update order_init_own_statistic SET
+		sum_num=#{sum_num},time_start=#{time_start},time_end=#{time_end},
+		orderinit_state_one=#{orderinit_state_one},orderinit_state_two=#{orderinit_state_two},
+		orderinit_state_three=#{orderinit_state_three},orderinit_state_four=#{orderinit_state_four},
+		state_proportion_one=#{state_proportion_one},state_proportion_two=#{state_proportion_two},
+		state_proportion_three=#{state_proportion_three},state_proportion_four=#{state_proportion_four},
+		state_num_one=#{state_num_one},state_num_two=#{state_num_two},
+		state_num_three=#{state_num_three},state_num_four=#{state_num_four}
+		where
+		staff_id=#{staff_id};
+	</update>
+
+	<insert id="insertOrderInitStatistics" parameterType="com.better.wust.entity.OrderInitStatistics">
+		insert into order_init_own_statistic(
+			sum_num,staff_id,time_start,time_end,
+			orderinit_state_one,orderinit_state_two,orderinit_state_three,orderinit_state_four,
+			state_proportion_one,state_proportion_two,state_proportion_three,state_proportion_four,
+			state_num_one,state_num_two,state_num_three,state_num_four
+		)values(
+			#{sum_num},#{staff_id},#{time_start},#{time_end},
+			#{orderinit_state_one},#{orderinit_state_two},#{orderinit_state_three},#{orderinit_state_four},
+			#{state_proportion_one},#{state_proportion_two},#{state_proportion_three},#{state_proportion_four},
+			#{state_num_one},#{state_num_two},#{state_num_three},#{state_num_four}
+		);
+	</insert>
+
+
+	<select id="isExistOrderinit" resultType="int" parameterType="String">
+		select count(*) from order_init where customer_name=#{param1} and customer_contact=#{param2};
+	</select>
+
+
+	<!--my
+
+
+
+	<select id="statisticsMarketingEffectiveByTime" parameterType="String"
+			resultType="int">
+        select COUNT(*) AS `order_effective` from orderinit_channel_staff
+        WHERE entry_real between #{param1} and #{param2} AND channel_id=#{param3} AND effective='有效单' ;
+    </select>
+
+	<select id="statisticsChannelUnEffectiveByTime" parameterType="String"
+			resultType="int">
+        select COUNT(*) AS `count` from orderinit_channel_staff
+        WHERE entry_real between #{param1} and #{param2} AND channel_id=#{param3} AND effective='无效单' ;
+    </select>
+
+	<select id="statisticsChannelUncallByTime" parameterType="String"
+			resultType="int">
+        select COUNT(*) AS `count` from orderinit_channel_staff
+        WHERE entry_real between #{param1} and #{param2} AND channel_id=#{param3} AND effective is null ;
+    </select>
+
+	<select id="statisticsChannelSumnumByTime" parameterType="String"
+			resultType="int">
+        select COUNT(*) AS `count` from orderinit_channel_staff
+        WHERE entry_real between #{param1} and #{param2} AND channel_id=#{param3}  ;
+    </select>
+
+	<update id="updateStatisticsByTime"
+			parameterType="com.better.wust.entity.ChanStatistics">
+		UPDATE chan_statistic SET
+		count_sumnum=#{count_sumnum},
+		count_effective=#{count_effective},
+		count_uneffective=#{count_uneffective},
+		count_uncall=#{count_uncall},
+		effective_proportion=#{effective_proportion},
+		time_start=#{time_start},
+		time_end=#{time_end}
+		WHERE
+		channel_id=#{channel_id}
+	</update>
+
+	<select id="findAllChanStatistics"
+			resultType="com.better.wust.entity.ChanStatistics">
+        select * from chan_statistic;
+    </select>-->
+
+</mapper>

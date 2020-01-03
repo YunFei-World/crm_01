@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.better.wust.dao.SaleStatisticsDao">
+    <select id="selectSaleStatistics" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.SaleStatistics">
+        select * from sale_statistics_month_campus
+        WHERE
+        ${sql}
+        LIKE
+        ${key}
+        ORDER BY
+        ${field} ${order} limit
+        #{start},#{limit};
+    </select>
+
+    <select id="selectSaleStatisticsNumber" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="int">
+        select count(*) from sale_statistics_month_campus
+        WHERE
+        ${sql}
+        LIKE
+        ${key};
+    </select>
+
+    <select id="statisticsSaleMonth" resultType="com.better.wust.entity.SaleStatistics">
+        SELECT campus_id,judge_up,sale_stage_up,COUNT(*) AS `count`
+        FROM follow_campus WHERE follow_up_id IN (
+        SELECT MAX(follow_up_id) FROM follow_up
+        GROUP BY sale_id ) AND time_load LIKE CONCAT(#{param1},'%')
+        and campus_id IN (SELECT campus_id FROM campus_manage WHERE staff_id = #{param2})
+        AND CONCAT(IFNULL(campus_id,'')) LIKE CONCAT(CONCAT('%',#{param3}),'%') GROUP BY campus_id, judge_up, sale_stage_up;
+    </select>
+
+    <select id="statisticsIsExist" parameterType="com.better.wust.entity.SaleStatistics"
+            resultType="com.better.wust.entity.SaleStatistics">
+        SELECT * FROM sale_statistics_month
+        WHERE statistics_month = #{statistics_month} and judge_up = #{judge_up}
+        and sale_stage_up = #{sale_stage_up} and campus_id = #{campus_id};
+    </select>
+
+    <update id="updateStatisticsBySaleAndMonth"
+            parameterType="com.better.wust.entity.SaleStatistics">
+		UPDATE sale_statistics_month SET
+		`count`=#{count}
+		WHERE
+		statistics_month = #{statistics_month} and judge_up = #{judge_up} and sale_stage_up = #{sale_stage_up},campus_id=#{campus_id};
+	</update>
+
+    <insert id="insertStatistics"
+            parameterType="com.better.wust.entity.SaleStatistics">
+		INSERT INTO
+		sale_statistics_month(campus_id,statistics_month,judge_up,sale_stage_up,`count`)
+		VALUES(#{campus_id},#{statistics_month},#{judge_up},#{sale_stage_up},#{count});
+	</insert>
+
+    <!--my-->
+
+
+
+
+
+
+
+  <!--  <insert id="insertNewStage"
+            parameterType="String">
+		INSERT INTO
+		sale_stage_statistics(campus_id,sale_stage)
+		VALUES(#{campus_id},#{sale_stage});
+	</insert>
+-->
+
+
+    <select id="statisticsSaleStageNumByTime" parameterType="String"
+            resultType="int">
+        select COUNT(*)  from saleorder
+        WHERE time_load between #{param1} and #{param2} AND sale_stage=#{param3} AND  CONCAT(IFNULL(campus_id,'')) LIKE CONCAT(CONCAT('%',#{param4}),'%') ;
+    </select>
+
+
+    <select id="statisticsSaleStageSumNumByTime" parameterType="String"
+            resultType="int">
+        select COUNT(*)  from saleorder
+        WHERE time_load between #{param1} and #{param2} AND  CONCAT(IFNULL(campus_id,'')) LIKE CONCAT(CONCAT('%',#{param3}),'%')  ;
+    </select>
+
+    <update id="updateStatisticsByTime"
+            parameterType="com.better.wust.entity.SaleStatistics">
+		UPDATE sale_stage_statistics SET
+		stage_count=#{stage_count},
+		sum_count=#{sum_count},
+		proportion=#{proportion},
+		time_start=#{time_start},
+		time_end=#{time_end}
+		WHERE
+		campus_id=#{campus_id} and  sale_stage=#{sale_stage};
+	</update>
+
+    <select id="findAllSaleStageStatisticsList"
+            parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.SaleStatistics">
+        select * from sale_stage_statistics_campus  WHERE
+        ${sql}
+        LIKE
+        ${key}
+        ORDER BY
+        ${field} ${order} limit
+        #{start},#{limit};
+    </select>
+
+
+
+
+    <select id="findAllSaleStageStatistics"
+            parameterType="String"
+            resultType="com.better.wust.entity.SaleStatistics">
+        select * from sale_stage_statistics WHERE campus_id=#{param1};
+    </select>
+
+
+    <select id="getAllSaleStatisticsNumber" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="int">
+        select count(*) from sale_stage_statistics_campus
+        WHERE
+        ${sql}
+        LIKE
+        ${key};
+    </select>
+
+
+
+</mapper>

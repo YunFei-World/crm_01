@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.better.wust.dao.TransRecordDao">
+    <select id="selectAllTransRecords" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.TransRecord">
+        select * from
+		trans_record_order_staff WHERE
+		${sql} LIKE
+		concat(concat('%',#{key}),'%')
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+    <select id="selectTransRecordNumber" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(*) from
+		trans_record_order_staff
+		WHERE
+		${sql}
+		LIKE
+		concat(concat('%',#{key}),'%');
+    </select>
+
+	<insert id="insertTransRecord" parameterType="com.better.wust.entity.TransRecord">
+		INSERT INTO
+		trans_record(order_init_id,trans_time,in_staff_id,out_staff_id)
+		VALUES(#{order_init_id},#{trans_time},#{staff_id},#{out_staff_id});
+	</insert>
+
+
+
+
+
+	<select id="selectAllTransRecordsSecond" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.TransRecord">
+        select * from
+		trans_record_sale_staff WHERE
+		${sql} LIKE
+		concat(concat('%',#{key}),'%')
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="getTransRecordSecondNumber" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(*) from
+		trans_record_sale_staff
+		WHERE
+		${sql}
+		LIKE
+		concat(concat('%',#{key}),'%');
+    </select>
+
+	<insert id="insertTransRecordSecond" parameterType="com.better.wust.entity.TransRecord">
+		INSERT INTO
+		trans_record_sale(order_init_id,trans_time,in_staff_id,out_staff_id)
+		VALUES(#{order_init_id},#{trans_time},#{staff_id},#{out_staff_id});
+	</insert>
+
+
+</mapper>

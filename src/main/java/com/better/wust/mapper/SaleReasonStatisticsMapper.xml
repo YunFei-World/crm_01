@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.better.wust.dao.SaleReasonStatisticsDao">
+
+
+    <!--my-->
+    <select id="statisticsSaleReasonNumByTime" parameterType="String"
+            resultType="int">
+        select COUNT(*)  from saleorder
+        WHERE time_load between #{param1} and #{param2} AND  false_reason=#{param3} AND
+                  CONCAT(IFNULL(sale_stage,'')) LIKE CONCAT(CONCAT('%',#{param4}),'%') AND
+                    CONCAT(IFNULL(campus_id,'')) LIKE CONCAT(CONCAT('%',#{param5}),'%') ;
+    </select>
+
+
+    <select id="statisticsSaleReasonSumNumByTime" parameterType="String"
+            resultType="int">
+       select COUNT(*)  from saleorder
+        WHERE time_load between #{param1} and #{param2}  AND
+                  CONCAT(IFNULL(sale_stage,'')) LIKE CONCAT(CONCAT('%',#{param3}),'%') AND
+                    CONCAT(IFNULL(campus_id,'')) LIKE CONCAT(CONCAT('%',#{param4}),'%') ;
+    </select>
+
+    <update id="updateStatisticsByTime"
+            parameterType="com.better.wust.entity.SaleReasonStatistics">
+		UPDATE sale_reason_statistics SET
+		reason_count=#{reason_count},
+		reason_sum_count=#{reason_sum_count},
+		proportion=#{proportion},
+		time_start=#{time_start},
+		time_end=#{time_end}
+		WHERE
+		campus_id=#{campus_id} and  sale_stage=#{sale_stage} and false_reason=#{false_reason};
+	</update>
+
+
+    <select id="findAllSaleReasonStatistics"
+            resultType="com.better.wust.entity.SaleReasonStatistics">
+        select * from sale_reason_statistics where campus_id=#{param1} ;
+    </select>
+
+    <select id="findAllSaleReasonStatisticsList"
+            parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.SaleReasonStatistics">
+        select * from sale_reason_statistics_campus  WHERE
+        ${sql}
+        LIKE
+        ${key}
+        ORDER BY
+        ${field} ${order} limit
+        #{start},#{limit};
+    </select>
+
+    <select id="getAllSaleReasonStatisticsNumber" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="int">
+        select count(*) from sale_reason_statistics_campus
+        WHERE
+        ${sql}
+        LIKE
+        ${key};
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.better.wust.dao.SignDao">
+    <select id="selectSignsById" parameterType="com.better.wust.tools.entity.SelectEntity"
+            resultType="com.better.wust.entity.SignSql">
+        select * from
+		sign_sale_list WHERE
+		${sql} LIKE
+		${key}
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+    <select id="selectSignNumberById" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(*) from
+		sign_sale_list
+		WHERE
+		${sql}
+		LIKE
+		${key};
+    </select>
+
+	<update id="updateSign"
+			parameterType="com.better.wust.entity.SignSql">
+		UPDATE sign_up SET
+		course_id=#{course_id},final_price=#{final_price},
+		sign_date=#{sign_date},estimate_time=#{estimate_time},
+		actual_time=#{actual_time},load_time=#{load_time},
+		student_sex=#{student_sex},student_birthday=#{student_birthday},
+		student_phone=#{student_phone},reward_balance=#{reward_balance},
+		order_course_num=#{order_course_num},student_id=#{student_id},
+		course_name=#{course_name},remark=#{remark}
+		WHERE
+		sign_id=#{sign_id};
+	</update>
+
+	<insert id="insertSign">
+		INSERT INTO
+		sign_up(sign_id,sale_id)
+		values (#{param1},#{param2});
+	</insert>
+
+	<select id="selectLastFollow" resultType="String">
+		SELECT follow_up_id FROM
+		follow_up ORDER BY
+		follow_up_id DESC LIMIT 1;
+	</select>
+
+	<select id="selectLastSign" resultType="String">
+		SELECT sign_id FROM
+		sign_up ORDER BY
+		sign_id DESC LIMIT 1;
+	</select>
+
+	<select id="selectAllSigns" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.SignSql">
+        select * from
+		sign_sale_list WHERE
+		${sql} LIKE
+		${key}
+		ORDER BY
+		${field}
+		${order}
+		limit
+		#{start},#{limit};
+    </select>
+
+	<select id="selectSignNumber" resultType="int" parameterType="com.better.wust.tools.entity.SelectEntity">
+        select count(*) from
+		sign_sale_list
+		WHERE
+		${sql}
+		LIKE
+		${key};
+    </select>
+
+	<select id="selectAllCourseNames" resultType="com.better.wust.entity.Course">
+		select * from jw_course
+		 where campusid like CONCAT(CONCAT('%',#{param1}),'%');
+    </select>
+
+
+	<select id="selectSignNumById" parameterType="String"
+			resultType="int">
+         select count(*) from sign_up WHERE sale_id=#{sale_id};
+    </select>
+
+
+	<!--学生表添加-->
+
+	<select id="getStudentLastId" resultType="String">
+		select student_id from
+		jw_student order by
+		student_id DESC limit 1;
+	</select>
+
+	<select id="findSaleIdBySign" parameterType="String"
+			resultType="String">
+		select sale_id from sign_up where sign_id=#{sign_id};
+	</select>
+
+	<select id="findSaleById" parameterType="String"
+			resultType="com.better.wust.entity.Sale">
+		select * from saleorder where sale_id=#{sale_id};
+	</select>
+
+	<select id="studentISExist"
+			resultType="com.better.wust.entity.Student">
+		select * from jw_student where student_name=#{param1} and student_birthday=#{param2};
+	</select>
+
+	<update id="updateStudentContent" parameterType="com.better.wust.entity.Student">
+		UPDATE jw_student SET
+		student_name=#{student_name},course_id=#{course_id},student_birthday=#{student_birthday},
+		student_certificates_type=#{student_certificates_type},student_certificates_number=#{student_certificates_number},
+		student_sex=#{student_sex},student_address=#{student_address},
+		student_phone=#{student_phone},student_email=#{student_email},
+		student_education=#{student_education},student_idcard_picture_one=#{student_idcard_picture_one},
+		student_idcard_picture_tow=#{student_idcard_picture_tow},student_person_picture=#{student_person_picture},
+		student_state=#{student_state},campus_id=#{campus_id},
+		student_remark=#{student_remark},student_type=#{student_type},
+		update_time=#{update_time},
+		contact_name_one=#{contact_name_one},contact_tel_one=#{contact_tel_one},
+		contact_name_two=#{contact_name_two},contact_tel_two=#{contact_tel_two},
+		real_balance=#{real_balance},reward_balance=#{reward_balance}
+		where
+		student_id=#{student_id};
+	</update>
+
+	<insert id="insertStudent" parameterType="com.better.wust.entity.Student">
+		insert into jw_student(
+		student_id,user_password,
+		student_name,course_id,student_birthday,
+		student_certificates_type,student_certificates_number,
+		student_sex,student_address,
+		student_phone,student_email,
+		student_education,student_idcard_picture_one,
+		student_idcard_picture_tow,student_person_picture,
+		student_state,campus_id,
+		student_remark,student_type,
+		create_time,update_time,
+		contact_name_one,contact_tel_one,
+		contact_name_two,contact_tel_two,
+		real_balance,reward_balance
+		)
+		VALUES (
+		#{student_id},#{user_password},
+		#{student_name},#{course_id},#{student_birthday},
+		#{student_certificates_type},#{student_certificates_number},
+		#{student_sex},#{student_address},
+		#{student_phone},#{student_email},
+		#{student_education},#{student_idcard_picture_one},
+		#{student_idcard_picture_tow},#{student_person_picture},
+		#{student_state},#{campus_id},
+		#{student_remark},#{student_type},
+		#{create_time},#{update_time},
+		#{contact_name_one},#{contact_tel_one},
+		#{contact_name_two},#{contact_tel_two},
+		#{real_balance},#{reward_balance}
+		);
+	</insert>
+
+	<!--学生课程添加-->
+	<select id="findIdByStudentId" parameterType="String"
+			resultType="Integer">
+		select id from jw_student where student_id=#{student_id};
+	</select>
+
+	<select id="findCourseById" parameterType="Integer"
+			resultType="com.better.wust.entity.Course">
+		select * from jw_course where Id=#{param1};
+	</select>
+
+	<insert id="insertStudentCourse" >
+		insert into jw_student_course(
+		student_id,course_id,is_retire,
+		is_placement,order_course_num,
+		remain_course_num,actual_price,
+		deal_price,deal_unit_price,
+		real_balance,reward_balance,
+		create_time
+		)values (
+		#{sc_student_id},#{sc_course_id},#{sc_is_retire},
+		#{sc_is_placement},#{sc_order_course_num},
+		#{sc_remain_course_num},#{sc_actual_price},
+		#{sc_deal_price},#{sc_deal_unit_price},
+		#{sc_real_balance},#{sc_reward_balance},
+		#{create_time}
+		);
+	</insert>
+
+	<insert id="insertSignCourse" >
+		insert into sign_course(
+		sign_id,course_id,student_id,create_time
+		)values (
+		#{param1},#{param2},#{param3},
+		#{param4}
+		);
+	</insert>
+
+
+
+	<select id="findStudentAllCourseByStudentId" resultType="String">
+		select course_id from jw_student where student_id=#{student_id};
+	</select>
+
+	<update id="updateStudentAllCourse">
+		update jw_student set course_id=#{param1} where student_id=#{param2};
+	</update>
+
+
+	<select id="findStudentClassByID" resultType="com.better.wust.entity.StudentClass">
+		select * from jw_student_course where student_id=#{param1} and course_id=#{param2} and is_retire=#{param3};
+	</select>
+
+
+
+	<select id="findAllSignCourseBySignId" parameterType="com.better.wust.tools.entity.SelectEntity"
+			resultType="com.better.wust.entity.SignCourse">
+        select * from
+		sign_course_list WHERE sign_id=#{sign_id};
+
+    </select>
+
+
+
+	<select id="findSignBySignId" resultType="com.better.wust.entity.SignSql">
+		select * from sign_sale_list where sign_id=#{sign_id};
+	</select>
+
+
+	<select id="findStaffByStaffId" resultType="com.better.wust.entity.Staff">
+		select * from stafflogin where staff_id=#{staff_id};
+	</select>
+
+
+	<select id="findCampusByCampusId" resultType="com.better.wust.entity.Campus">
+		select * from pd_campus where id=#{param1};
+	</select>
+
+</mapper>
